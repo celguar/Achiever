@@ -6,7 +6,7 @@ local _G, _ = _G or getfenv()
 ACHIEVER_ADDON_NAME = 'Achiever'
 local ACHIEVER_ADDON_VERSION = '0.0.1.0'
 local ACHIEVER_ADDON_CHANNEL = 'ACHIEVER_CHANNEL'
-local ACHIEVER_ADDON_DEBUG = false
+local ACHIEVER_ADDON_DEBUG = true
 
 local function debug(msg)
     if ACHIEVER_ADDON_DEBUG then
@@ -81,7 +81,7 @@ Achiever.processServerMessage = function(self, message)
     local params = split(message, '|')
     if (params[1] == 'ACHI') then
         if (params[2] == 'AC') then
-            -- debug('server response: new achievement entry ')
+            debug('server response: new achievement entry ')
             local a = split(params[3], ';')
             local id = tonumber(a[1])
             achieverDB.achievements.data[id] = {}
@@ -131,6 +131,7 @@ Achiever.processServerMessage = function(self, message)
             debug('server response: achievement data version')
             achieverDB.achievements.version = tonumber(params[3])
         elseif (params[2] == 'CA') then
+            debug('server response: get all categories')
             local a = split(params[3], ";")
             local id = tonumber(a[1])
             achieverDB.categories.data[id] = {}
@@ -157,6 +158,7 @@ Achiever.processServerMessage = function(self, message)
             debug('server response: criteria data version')
             achieverDB.categories.version = tonumber(params[3])
         elseif (params[2] == 'CR') then
+            debug('server response: get all criteria')
             local a = split(params[3], ";")
             local id = tonumber(a[1])
             achieverDB.criteria.data[id] = {}
@@ -194,11 +196,13 @@ Achiever.processServerMessage = function(self, message)
             debug('server response: criteria data version')
             achieverDB.criteria.version = tonumber(params[3])
         elseif (params[2] == 'CH_AC') then
+            debug('server response: char achievements')
             local a = split(params[3], ";")
             local id = tonumber(a[1])
             achieverDBpc.achievements[id] = {}
             achieverDBpc.achievements[id].date = tonumber(a[2])
         elseif (params[2] == 'CH_CR') then
+            debug('server response: char criteria')
             local a = split(params[3], ";")
             local id = tonumber(a[1])
             achieverDBpc.criteria[id] = {}
@@ -238,27 +242,32 @@ end
 Achiever.apiRequestCategoryInfo = function(self, version)
 
     debug('requested information about categories from server, ' .. version)
-    SendChatMessage('!achievements getCategoties ' .. version, 'CHANNEL', nil, Achiever.channelIndex)
+    SendChatMessage('.achievements getCategoties ' .. version)
+    --SendChatMessage('!achievements getCategoties ' .. version, 'CHANNEL', nil, Achiever.channelIndex)
 end
 Achiever.apiRequestAchievementInfo = function(self, version)
 
     debug('requested information about achievements from server, ' .. version)
-    SendChatMessage('!achievements getAchievements ' .. version, 'CHANNEL', nil, Achiever.channelIndex)
+    SendChatMessage('.achievements getAchievements ' .. version)
+    --SendChatMessage('!achievements getAchievements ' .. version, 'CHANNEL', nil, Achiever.channelIndex)
 end
 Achiever.apiRequestCriteriaInfo = function(self, version)
 
     debug('requested information about criteria from server, ' .. version)
-    SendChatMessage('!achievements getCriteria ' .. version, 'CHANNEL', nil, Achiever.channelIndex)
+    SendChatMessage('.achievements getCriteria ' .. version)
+    --SendChatMessage('!achievements getCriteria ' .. version, 'CHANNEL', nil, Achiever.channelIndex)
 end
 Achiever.apiRequestCharacterCriteria = function(self)
     debug('requested character criteria progress from server')
     achieverDBpc.criteria = {}
-    SendChatMessage('!achievements getCharacterCriteria', 'CHANNEL', nil, Achiever.channelIndex)
+    SendChatMessage('.achievements getCharacterCriteria')
+    --SendChatMessage('!achievements getCharacterCriteria', 'CHANNEL', nil, Achiever.channelIndex)
 end
 Achiever.apiRequestCharacterAchievements = function(self)
     debug('requested character achievements from server')
     achieverDBpc.achievements = {}
-    SendChatMessage('!achievements getCharacterAchievements', 'CHANNEL', nil, Achiever.channelIndex)
+    SendChatMessage('.achievements getCharacterAchievements')
+    --SendChatMessage('.achievements getCharacterAchievements', 'CHANNEL', nil, Achiever.channelIndex)
 end
 
 Achiever.getChannelIndex = function(self, channelName)
@@ -280,7 +289,7 @@ Achiever.joinChannel = function(self)
     if (self.channelIndex == nil) then
         JoinChannelByName(self.channel)
     else
-        self:startup()
+        --self:startup()
     end
 end
 
@@ -320,7 +329,7 @@ Achiever:SetScript("OnEvent", function()
 		return
 	elseif (event == "ADDON_LOADED" and arg1 == ACHIEVER_ADDON_NAME) then
         debug('ADDON_LOADED')
-        Achiever:joinChannel()
+        --Achiever:joinChannel()
         -- AchievementFrameCategories_OnEvent(AchievementFrameCategories, "ADDON_LOADED", ACHIEVER_ADDON_NAME)
         -- AchievementFrameAchievements_OnEvent(AchievementFrameCategories, "ADDON_LOADED", ACHIEVER_ADDON_NAME)
 	elseif (event == 'CHAT_MSG_CHANNEL_LEAVE') then
@@ -329,14 +338,17 @@ Achiever:SetScript("OnEvent", function()
         debug('OnEvent CHAT_MSG_ADDON')
     elseif (event == 'VARIABLES_LOADED') then
         debug('VARIABLES_LOADED')
+        --Achiever:joinChannel()
 	elseif (event == 'CHAT_MSG_CHANNEL_NOTICE') then
 		if (arg9 == Achiever.channel and arg1 == 'YOU_JOINED') then
 			Achiever.channelIndex = arg8
 			debug('just joined chan index ' .. Achiever.channelIndex)
-            Achiever:startup()
+            debug('just joined chan name ' .. arg9)
+            --Achiever:startup()
 		end
 	elseif (event == 'PLAYER_ENTERING_WORLD') then
-
+        Achiever:joinChannel()
+        Achiever:startup()
         Achiever:hookChatFrame(ChatFrame1)
 	end
 end)
