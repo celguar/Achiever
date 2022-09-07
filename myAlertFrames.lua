@@ -69,6 +69,8 @@ end
 
 function AlertFrame_StopOutAnimation(frame)
 	frame.wait = true
+	frame:SetAlpha(1);
+	frame.elapsed = 0;
 	-- frame.waitAndAnimOut:Stop();
 	-- frame.waitAndAnimOut.animOut:SetStartDelay(1);
 end
