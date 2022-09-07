@@ -30,7 +30,7 @@
 				</Anchors>
 				<TexCoords left="0" right=".605" top="0" bottom=".703"/>
 			</Texture>
-			<FontString name="$parentUnlocked" inherits="GameFontBlackTiny" text="ACHIEVEMENT_UNLOCKED">
+			<FontString name="$parentUnlocked" inherits="GameFontNormalSmall" text="ACHIEVEMENT_UNLOCKED">
 				<Size x="200" y="12"/>
 				<Anchors>
 					<Anchor point="TOP">
