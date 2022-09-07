@@ -2413,7 +2413,7 @@ function AchievementFrameSummaryCategory_OnEvent (self, event, ...)
 end
 
 function AchievementFrameSummaryCategory_OnShow (self)
-	local totalAchievements, totalCompleted = AchievementFrame_GetCategoryTotalNumAchievements(self:GetID(), true);
+	local totalAchievements, totalCompleted = AchievementFrame_GetCategoryTotalNumAchievements(self:GetID(), false);
 
 	local categoryName = GetCategoryInfo(self:GetID());
 	self.label:SetText(categoryName);
