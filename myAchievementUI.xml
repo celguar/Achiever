@@ -314,7 +314,7 @@
 
 	<Button name="AchievementFrameTabButtonTemplate" virtual="true">
         <Size>
-            <AbsDimension x="115" y="32"/>
+            <AbsDimension x="115" y="37"/>
         </Size>
         <Layers>
         	<Layer level="BACKGROUND">
