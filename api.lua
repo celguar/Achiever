@@ -444,10 +444,24 @@ function GetAchievementCriteriaInfo(achievementID, criteriaIndex)
     local flags = criteria.flags
     local assetId = criteria.assetId
 
-    if (pCriteria) then
-        quantity = pCriteria.counter
-        completed = reqQuantity == quantity
-        quantityStr = quantity .. ' / ' .. reqQuantity
+    -- Fix achievement criterias not showing as completed
+    if (reqQuantity == 0 and criteriaType == CRITERIA_TYPE_ACHIEVEMENT) then
+        reqQuantity = 1
+    end
+
+    if (criteria) then
+        if (pCriteria) then
+            quantity = pCriteria.counter
+        else
+            quantity = 0
+        end
+        completed = pCriteria and reqQuantity == quantity
+        quantityString = quantity .. ' / ' .. reqQuantity
+    end
+
+    if ( bit.band(flags, ACHIEVEMENT_CRITERIA_FLAG_MONEY_COUNTER) == ACHIEVEMENT_CRITERIA_FLAG_MONEY_COUNTER ) then
+        quantityString = getTextGSC(quantity, true, false)
+        quantityString = quantityString .. ' / ' .. getTextGSC(reqQuantity, true, false)
     end
 
     return name, criteriaType, completed, quantity, reqQuantity, charName, flags, assedId, quantityString, criteriaId
