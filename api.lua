@@ -354,6 +354,66 @@ local function _GetAchievementCriteria(aid, c)
     -- return c.name, c.type, completion:IsCriteriaCompleted(aid, c.id), quantity, requiredQuantity, '', c.flags, assetID, quantityStr, c.id, true, 0, 0
 end
 
+-- calculate the gold, silver, and copper values based the amount of copper
+function getGSC(money)
+    if (money == nil) then money = 0 end
+    local g = math.floor(money / 10000)
+    local s = math.floor((money - (g*10000)) / 100)
+    local c = math.ceil(money - (g*10000) - (s*100))
+    return g,s,c
+end
+
+-- formats money text by color for gold, silver, copper
+function getTextGSC(money, exact, dontUseColorCodes)
+    local TEXT_NONE = "0"
+
+    local GSC_GOLD="ffd100"
+    local GSC_SILVER="e6e6e6"
+    local GSC_COPPER="c8602c"
+    local GSC_START="|cff%s%d|r"
+    local GSC_PART=".|cff%s%02d|r"
+    local GSC_NONE="|cffa0a0a0"..TEXT_NONE.."|r"
+
+    if (not exact) and (money >= 10000) then
+        -- Round to nearest silver
+        money = math.floor(money / 100 + 0.5) * 100
+    end
+    local g, s, c = getGSC(money)
+
+    local gsc = ""
+    if (not dontUseColorCodes) then
+        local fmt = GSC_START
+        if (g > 0) then
+            gsc = gsc..string.format(fmt, GSC_GOLD, g)
+            fmt = GSC_PART
+        end
+        if (s > 0) or (c > 0) then
+            gsc = gsc..string.format(fmt, GSC_SILVER, s)
+            fmt = GSC_PART
+        end
+        if (c > 0) then
+            gsc = gsc..string.format(fmt, GSC_COPPER, c)
+        end
+        if (gsc == "") then
+            gsc = GSC_NONE
+        end
+    else
+        if (g > 0) then
+            gsc = gsc .. g .. "g ";
+        end;
+        if (s > 0) then
+            gsc = gsc .. s .. "s ";
+        end;
+        if (c > 0) then
+            gsc = gsc .. c .. "c ";
+        end;
+        if (gsc == "") then
+            gsc = TEXT_NONE
+        end
+    end
+    return gsc
+end
+
 -- criteriaString, criteriaType, completed, quantity, reqQuantity,
 --  charName, flags, assetID, quantityString, criteriaID, eligible =
 --    GetAchievementCriteriaInfo(achievementID, criteriaIndex [, countHidden])
