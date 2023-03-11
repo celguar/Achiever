@@ -93,6 +93,7 @@ STATISTICS = "Statistics"
 TRACK_ACHIEVEMENT = "Track";
 UNTRACK_ACHIEVEMENT_TOOLTIP = "Uncheck to stop tracking this achievement.";
 TRACK_ACHIEVEMENT_TOOLTIP = "Check to track this achievement.";
+FEAT_OF_STRENGTH_DESCRIPTION = "Feats of Strength achievements represent the player's various glories of Azeroth, and as such, they are very difficult — if not impossible — to earn. They are worth no points, and unlike normal achievements, unearned feats are not displayed in the achievements interface. Feats include obtaining rare mounts, special titles, and more. Some Feats of Strength can still be obtained, while others are no longer possible to get.";
 
 ACHIEVEMENT_FUNCTIONS = {
 	categoryAccessor = GetCategoryList,
