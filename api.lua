@@ -269,7 +269,12 @@ function GetNumCompletedAchievements(inGuildView)
     for _ in pairs(achieverDBpc.achievements) do completed = completed + 1 end
 
     local total = 0;
-    for _ in pairs(achieverDB.achievements.data) do total = total + 1 end
+    for id, v in pairs(achieverDB.achievements.data) do
+        local achievement = achieverDB.achievements.data[id];
+        if (achievement and achievement.categoryId ~= 1 and achievement.points > 0 and not (bit.band(achievement.flags, ACHIEVEMENT_FLAGS_HIDDEN) == ACHIEVEMENT_FLAGS_HIDDEN) and not (bit.band(achievement.flags, ACHIEVEMENT_FLAGS_STATISTIC) == ACHIEVEMENT_FLAGS_STATISTIC)) then
+            total = total + 1
+        end
+    end
     return total, completed
 end
 
