@@ -6,7 +6,7 @@ local _G, _ = _G or getfenv()
 ACHIEVER_ADDON_NAME = 'Achiever'
 local ACHIEVER_ADDON_VERSION = '0.0.2.0'
 local ACHIEVER_ADDON_CHANNEL = 'ACHIEVER_CHANNEL'
-local ACHIEVER_ADDON_DEBUG = true
+local ACHIEVER_REQUESTED_DATA = false
 
 local function debug(msg)
     if achieverDBpc.debug == "enabled" then
@@ -254,6 +254,12 @@ Achiever.processServerMessage = function(self, message)
     end
 end
 
+Achiever.apiEnableDataSend = function(self, version)
+
+    debug('request to enable sending achievement info, ' .. version)
+    SendChatMessage('.achievements enableAchiever ' .. version)
+    --SendChatMessage('!achievements getCategoties ' .. version, 'CHANNEL', nil, Achiever.channelIndex)
+end
 Achiever.apiRequestCategoryInfo = function(self, version)
 
     --debug('requested information about categories from server, ' .. version)
@@ -309,14 +315,17 @@ Achiever.joinChannel = function(self)
 end
 
 Achiever.startup = function(self)
+    if (not achieverDBpc.debug) then achieverDBpc.debug = "disabled" end
+    if (not achieverDBpc.version) then achieverDBpc.version = 0 end
+
     if (not achieverDB) then achieverDB = {} end
     if (not achieverDB.categories) then
-        achieverDB.categories = { version = -1 }
+        achieverDB.categories = { version = achieverDBpc.version }
         achieverDB.categories.data = {}
         achieverDB.categories.byParent = {}
     end
     if (not achieverDB.achievements) then
-        achieverDB.achievements = { version = -1 }
+        achieverDB.achievements = { version = achieverDBpc.version }
         achieverDB.achievements.totalPoints = 0
         achieverDB.achievements.data = {}
         achieverDB.achievements.byCategory = {}
@@ -324,16 +333,18 @@ Achiever.startup = function(self)
         achieverDB.achievements.previousById = {}
     end
     if (not achieverDB.criteria) then
-        achieverDB.criteria = { version = -1 }
+        achieverDB.criteria = { version = achieverDBpc.version }
         achieverDB.criteria.data = {}
         achieverDB.criteria.byAchievement = {}
     end
     if (not achieverDBpc) then achieverDBpc = {} end
-    self:apiRequestCategoryInfo(achieverDB.categories.version)
-    self:apiRequestAchievementInfo(achieverDB.achievements.version)
-    self:apiRequestCriteriaInfo(achieverDB.criteria.version)
-    self:apiRequestCharacterCriteria()
-    self:apiRequestCharacterAchievements()
+    --self:apiRequestCategoryInfo(achieverDB.categories.version)
+    --self:apiRequestAchievementInfo(achieverDB.achievements.version)
+    --self:apiRequestCriteriaInfo(achieverDB.criteria.version)
+    --self:apiRequestCharacterCriteria()
+    --self:apiRequestCharacterAchievements()
+    debug('request data to UI ' .. achieverDBpc.version)
+    self:apiEnableDataSend(achieverDBpc.version)
 end
 
 
@@ -344,6 +355,8 @@ Achiever:SetScript("OnEvent", function()
 		return
 	elseif (event == "ADDON_LOADED" and arg1 == ACHIEVER_ADDON_NAME) then
         debug('ADDON_LOADED')
+        Achiever:hookChatFrame(ChatFrame1)
+        Achiever:startup()
         --Achiever:joinChannel()
         -- AchievementFrameCategories_OnEvent(AchievementFrameCategories, "ADDON_LOADED", ACHIEVER_ADDON_NAME)
         -- AchievementFrameAchievements_OnEvent(AchievementFrameCategories, "ADDON_LOADED", ACHIEVER_ADDON_NAME)
@@ -354,17 +367,17 @@ Achiever:SetScript("OnEvent", function()
     elseif (event == 'VARIABLES_LOADED') then
         debug('VARIABLES_LOADED')
         --Achiever:joinChannel()
-	elseif (event == 'CHAT_MSG_CHANNEL_NOTICE') then
-		if (arg9 == Achiever.channel and arg1 == 'YOU_JOINED') then
-			Achiever.channelIndex = arg8
-			debug('just joined chan index ' .. Achiever.channelIndex)
-            debug('just joined chan name ' .. arg9)
-            --Achiever:startup()
-		end
+	--elseif (event == 'CHAT_MSG_CHANNEL_NOTICE') then
+	--	if (arg9 == Achiever.channel and arg1 == 'YOU_JOINED') then
+	--		Achiever.channelIndex = arg8
+	--		debug('just joined chan index ' .. Achiever.channelIndex)
+    --        debug('just joined chan name ' .. arg9)
+    --        --Achiever:startup()
+	--	end
 	elseif (event == 'PLAYER_ENTERING_WORLD') then
-        Achiever:joinChannel()
-        Achiever:startup()
+        --Achiever:joinChannel()
         Achiever:hookChatFrame(ChatFrame1)
+        Achiever:startup()
 	end
 end)
 
