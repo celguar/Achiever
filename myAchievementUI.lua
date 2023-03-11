@@ -898,7 +898,7 @@ function AchievementFrameAchievements_OnLoad (self)
 		end
 
 	-- self:RegisterEvent("ADDON_LOADED");
-	warn('disabled registration event')
+	-- warn('disabled registration event')
 	AchievementFrameAchievementsContainerScrollBarBG:Show();
 	AchievementFrameAchievementsContainer.update = AchievementFrameAchievements_Update;
 	HybridScrollFrame_CreateButtons(AchievementFrameAchievementsContainer, "AchievementTemplate", 0, -2);
@@ -1901,7 +1901,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			progressBar:Show();
 
 			numRows = numRows + 1;
-		else
+		elseif (achieverDBpc.debug == "enabled" or not ( bit.band(flags, ACHIEVEMENT_CRITERIA_HIDDEN) == ACHIEVEMENT_CRITERIA_HIDDEN) ) then
 			textStrings = textStrings + 1;
 			local criteria = AchievementButton_GetCriteria(textStrings);
 			criteria:ClearAllPoints();
@@ -2177,12 +2177,22 @@ function AchievementFrameStats_SetStat(button, category, index, colorIndex, isSu
 	local criteriaString, criteriaType, completed, quantityNumber, reqQuantity, charName, flags, assetID, quantity;
 	if ( not isSummary ) then
 		quantity = GetStatistic(id);
+		if ( quantity > 0 ) then
+			criteriaString, criteriaType, completed, quantityNumber, reqQuantity, charName, flags, assetID = GetAchievementCriteriaInfo(id, 1);
+			if (quantity and reqQuantity and quantity <= (reqQuantity * numCriteria) ) then
+				quantity = floor(quantity / reqQuantity)
+			end
+		end
 	else
 		criteriaString, criteriaType, completed, quantityNumber, reqQuantity, charName, flags, assetID, quantity = GetAchievementCriteriaInfo(category);
 	end
-	if ( not quantity ) then
+	if ( not quantity or quantity == 0) then
 		quantity = "--";
 	end
+	if ( quantity and flags and ( bit.band(flags, ACHIEVEMENT_CRITERIA_FLAG_MONEY_COUNTER) == ACHIEVEMENT_CRITERIA_FLAG_MONEY_COUNTER ) ) then
+        quantity = getTextGSC(quantity, true, false)
+    end
+
 	button.value:SetText(quantity);
 
 	-- Hide the header images
