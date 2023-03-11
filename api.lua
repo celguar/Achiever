@@ -29,6 +29,15 @@ function AchievementCategoryButton_Localize(button)
 
 end
 
+-- Achievement Flags
+ACHIEVEMENT_FLAGS_STATISTIC             = 1;
+ACHIEVEMENT_FLAGS_HIDDEN                = 2;
+
+-- Criteria Flags
+ACHIEVEMENT_CRITERIA_PROGRESS_BAR       = 1;
+ACHIEVEMENT_CRITERIA_HIDDEN             = 2;
+ACHIEVEMENT_CRITERIA_FLAG_MONEY_COUNTER = 32;
+
 
 local function IsAchievementCompleted(id)
     local achievementCompletion = achieverDBpc.achievements[tonumber(id)]
