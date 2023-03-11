@@ -1783,6 +1783,28 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 	-- Why textStrings? You try naming anything just "string" and see how happy you are.
 	local textStrings, progressBars, metas = 0, 0, 0;
 
+    -- Compress all progress bars
+    local compressBars = false;
+    local totalQuantity = 0;
+	local id, achievementName, points, accompleted, month, day, year, description, acflags, iconpath = GetAchievementInfo(id);
+	if ( bit.band(acflags, ACHIEVEMENT_FLAG_SUMM) == ACHIEVEMENT_FLAG_SUMM ) then
+		compressBars = true;
+		for i = 1, numCriteria do
+			local criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString = GetAchievementCriteriaInfo(id, i);
+			totalQuantity = totalQuantity + quantity;
+		end
+		numCriteria = 1;
+	end
+
+	for i = 1, numCriteria do
+		local criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString = GetAchievementCriteriaInfo(id, i);
+		if ( bit.band(flags, ACHIEVEMENT_CRITERIA_PROGRESS_BAR) == ACHIEVEMENT_CRITERIA_PROGRESS_BAR and bit.band(flags, ACHIEVEMENT_CRITERIA_HIDDEN) == ACHIEVEMENT_CRITERIA_HIDDEN ) then
+			compressBars = true;
+			numCriteria = 1;
+		end
+	end
+
+
 	local numRows = 0;
 	local maxCriteriaWidth = 0;
 	local yPos;
@@ -1806,7 +1828,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				numRows = numRows + 2;
 			end
 
-			local id, achievementName, points, completed, month, day, year, description, flags, iconpath = GetAchievementInfo(assetID);
+			local acid, achievementName, points, accompleted, month, day, year, description, acflags, iconpath = GetAchievementInfo(assetID);
 
 			if ( month ) then
 				metaCriteria.date = string.format('%d/%d/%d', day, month, year);
@@ -1857,9 +1879,23 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				progressBar:SetPoint("TOP", progressBarTable[progressBars-1], "BOTTOM", 0, 0);
 			end
 
-			progressBar.text:SetText(string.format("%s", quantityString));
+			--if ( bit.band(flags, ACHIEVEMENT_CRITERIA_HIDDEN) == ACHIEVEMENT_CRITERIA_HIDDEN and not compressBars) then
+			--	compressBars = true;
+			--	for n = 1, numCriteria do
+			--		local tcriteriaString, tcriteriaType, tcompleted, tquantity, treqQuantity, tcharName, tflags, tassetID, tquantityString = GetAchievementCriteriaInfo(id, n);
+			--		totalQuantity = totalQuantity + tquantity;
+			--	end
+			--	numCriteria = 1;
+			--end
+
 			progressBar:SetMinMaxValues(0, reqQuantity);
-			progressBar:SetValue(quantity);
+			if (compressBars) then
+				progressBar.text:SetText(string.format("%s", totalQuantity .. ' / ' .. reqQuantity));
+				progressBar:SetValue(totalQuantity);
+			else
+				progressBar.text:SetText(string.format("%s", quantityString));
+				progressBar:SetValue(quantity);
+			end
 
 			progressBar:SetParent(objectivesFrame);
 			progressBar:Show();
