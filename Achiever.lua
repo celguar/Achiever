@@ -4,17 +4,32 @@
 local _G, _ = _G or getfenv()
 
 ACHIEVER_ADDON_NAME = 'Achiever'
-local ACHIEVER_ADDON_VERSION = '0.0.1.0'
+local ACHIEVER_ADDON_VERSION = '0.0.2.0'
 local ACHIEVER_ADDON_CHANNEL = 'ACHIEVER_CHANNEL'
 local ACHIEVER_ADDON_DEBUG = true
 
 local function debug(msg)
-    if ACHIEVER_ADDON_DEBUG then
+    if achieverDBpc.debug == "enabled" then
 	    DEFAULT_CHAT_FRAME:AddMessage('|cffc663fcDEBUG: |cffff55ff'.. (msg or 'nil'))
     end
 end
 local function warn(msg)
 	DEFAULT_CHAT_FRAME:AddMessage('|cf3f3f66cWARN: |cffff55ff'.. (msg or 'nil'))
+end
+
+local function toggleDebug()
+    if achieverDBpc.debug == "enabled" then
+        achieverDBpc.debug = "disabled"
+        DEFAULT_CHAT_FRAME:AddMessage('Achiever DEBUG mode disabled')
+    else
+        achieverDBpc.debug = "enabled"
+        DEFAULT_CHAT_FRAME:AddMessage('Achiever DEBUG mode enabled')
+    end
+end
+
+SLASH_ACHIEVERDEBUG1 = "/acdebug"
+SlashCmdList.ACHIEVERDEBUG = function()
+    toggleDebug()
 end
 
 Achiever = CreateFrame("Frame")
@@ -81,7 +96,7 @@ Achiever.processServerMessage = function(self, message)
     local params = split(message, '|')
     if (params[1] == 'ACHI') then
         if (params[2] == 'AC') then
-            debug('server response: new achievement entry ')
+            --debug('server response: new achievement entry ')
             local a = split(params[3], ';')
             local id = tonumber(a[1])
             achieverDB.achievements.data[id] = {}
@@ -124,14 +139,14 @@ Achiever.processServerMessage = function(self, message)
             end
 
             if (n == c) then
-                debug('loaded achievements from server')
+                --debug('loaded achievements from server')
             end
 
         elseif (params[2] == 'ACV') then
             debug('server response: achievement data version')
             achieverDB.achievements.version = tonumber(params[3])
         elseif (params[2] == 'CA') then
-            debug('server response: get all categories')
+            --debug('server response: get all categories')
             local a = split(params[3], ";")
             local id = tonumber(a[1])
             achieverDB.categories.data[id] = {}
@@ -158,7 +173,7 @@ Achiever.processServerMessage = function(self, message)
             debug('server response: criteria data version')
             achieverDB.categories.version = tonumber(params[3])
         elseif (params[2] == 'CR') then
-            debug('server response: get all criteria')
+            --debug('server response: get all criteria')
             local a = split(params[3], ";")
             local id = tonumber(a[1])
             achieverDB.criteria.data[id] = {}
@@ -190,19 +205,19 @@ Achiever.processServerMessage = function(self, message)
             -- table.insert(achieverDB.criteria.byAchievement[achievementId], id)
 
             if (n == c) then
-                debug('loaded criteria from server')
+                --debug('loaded criteria from server')
             end
         elseif (params[2] == 'CRV') then
             debug('server response: criteria data version')
             achieverDB.criteria.version = tonumber(params[3])
         elseif (params[2] == 'CH_AC') then
-            debug('server response: char achievements')
+            --debug('server response: char achievements')
             local a = split(params[3], ";")
             local id = tonumber(a[1])
             achieverDBpc.achievements[id] = {}
             achieverDBpc.achievements[id].date = tonumber(a[2])
         elseif (params[2] == 'CH_CR') then
-            debug('server response: char criteria')
+            --debug('server response: char criteria')
             local a = split(params[3], ";")
             local id = tonumber(a[1])
             achieverDBpc.criteria[id] = {}
@@ -241,19 +256,19 @@ end
 
 Achiever.apiRequestCategoryInfo = function(self, version)
 
-    debug('requested information about categories from server, ' .. version)
+    --debug('requested information about categories from server, ' .. version)
     SendChatMessage('.achievements getCategoties ' .. version)
     --SendChatMessage('!achievements getCategoties ' .. version, 'CHANNEL', nil, Achiever.channelIndex)
 end
 Achiever.apiRequestAchievementInfo = function(self, version)
 
-    debug('requested information about achievements from server, ' .. version)
+    --debug('requested information about achievements from server, ' .. version)
     SendChatMessage('.achievements getAchievements ' .. version)
     --SendChatMessage('!achievements getAchievements ' .. version, 'CHANNEL', nil, Achiever.channelIndex)
 end
 Achiever.apiRequestCriteriaInfo = function(self, version)
 
-    debug('requested information about criteria from server, ' .. version)
+    --debug('requested information about criteria from server, ' .. version)
     SendChatMessage('.achievements getCriteria ' .. version)
     --SendChatMessage('!achievements getCriteria ' .. version, 'CHANNEL', nil, Achiever.channelIndex)
 end

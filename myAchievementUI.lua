@@ -1,8 +1,11 @@
 local _G, _ = _G or getfenv()
 
+local ACHIEVER_ADDON_DEBUG = false
 
 local function debug(msg)
-	-- DEFAULT_CHAT_FRAME:AddMessage('|cffc663fcDEBUG: |cffff55ff'.. (msg or 'nil'))
+	if achieverDBpc.debug == "enabled" then
+		DEFAULT_CHAT_FRAME:AddMessage('|cffc663fcDEBUG: |cffff55ff'.. (msg or 'nil'))
+	end
 end
 local function warn(msg)
 	DEFAULT_CHAT_FRAME:AddMessage('|cf3f3f66cWARN: |cffff55ff'.. (msg or 'nil'))
@@ -11,6 +14,21 @@ end
 SLASH_ACHIEVER1 = "/ac"
 SlashCmdList.ACHIEVER = function()
     AchievementFrame_ToggleAchievementFrame()
+end
+
+local function toggleDebug()
+    if achieverDBpc.debug == "enabled" then
+        achieverDBpc.debug = "disabled"
+        DEFAULT_CHAT_FRAME:AddMessage('Achiever DEBUG mode disabled')
+    else
+        achieverDBpc.debug = "enabled"
+        DEFAULT_CHAT_FRAME:AddMessage('Achiever DEBUG mode enabled')
+    end
+end
+
+SLASH_ACHIEVERDEBUG1 = "/acdebug"
+SlashCmdList.ACHIEVERDEBUG = function()
+    toggleDebug()
 end
 
 -- Criteria Types
