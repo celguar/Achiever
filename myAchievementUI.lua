@@ -590,7 +590,7 @@ function AchievementFrameCategories_DisplayButton (button, element)
 		categoryName, parentID, flags = GetCategoryInfo(id);
 		numAchievements, numCompleted = AchievementFrame_GetCategoryTotalNumAchievements(id, true);
 	end
-	button.label:SetText(categoryName);
+	button.label:SetText(categoryName .. "    ");
 	button.categoryID = id;
 	button.flags = flags;
 	button.element = element;
