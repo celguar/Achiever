@@ -315,10 +315,20 @@ Achiever.joinChannel = function(self)
 end
 
 Achiever.startup = function(self)
+    local factionGroup, localedFaction = UnitFactionGroup("player");
+
     if (not achieverDBpc.debug) then achieverDBpc.debug = "disabled" end
     if (not achieverDBpc.version) then achieverDBpc.version = 0 end
 
     if (not achieverDB) then achieverDB = {} end
+    if (factionGroup == "Alliance") then
+        if (not achieverDB.Alliance) then achieverDB.Alliance = {} end
+        achieverDB = achieverDB.Alliance
+    end
+    if (factionGroup == "Horde") then
+        if (not achieverDB.Horde) then achieverDB.Horde = {} end
+        achieverDB = achieverDB.Horde
+    end
     if (not achieverDB.categories) then
         achieverDB.categories = { version = achieverDBpc.version }
         achieverDB.categories.data = {}
