@@ -8,7 +8,9 @@ local function debug(msg)
 	end
 end
 local function warn(msg)
-	DEFAULT_CHAT_FRAME:AddMessage('|cf3f3f66cWARN: |cffff55ff'.. (msg or 'nil'))
+	if achieverDBpc.debug == "enabled" then
+		DEFAULT_CHAT_FRAME:AddMessage('|cf3f3f66cWARN: |cffff55ff'.. (msg or 'nil'))
+	end
 end
 
 SLASH_ACHIEVER1 = "/ac"
