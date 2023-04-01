@@ -7,6 +7,7 @@ ACHIEVER_ADDON_NAME = 'Achiever'
 local ACHIEVER_ADDON_VERSION = '0.0.2.0'
 local ACHIEVER_ADDON_CHANNEL = 'ACHIEVER_CHANNEL'
 local ACHIEVER_REQUESTED_DATA = false
+local ACHIEVER_STARTED = false
 
 local function debug(msg)
     if achieverDBpc.debug == "enabled" then
@@ -315,6 +316,10 @@ Achiever.joinChannel = function(self)
 end
 
 Achiever.startup = function(self)
+    --if (ACHIEVER_STARTED == true) then
+    --    return
+    --end
+
     local factionGroup, localedFaction = UnitFactionGroup("player");
 
     if (not achieverDBpc.debug) then achieverDBpc.debug = "disabled" end
@@ -323,11 +328,11 @@ Achiever.startup = function(self)
     if (not achieverDB) then achieverDB = {} end
     if (factionGroup == "Alliance") then
         if (not achieverDB.Alliance) then achieverDB.Alliance = {} end
-        achieverDB = achieverDB.Alliance
+        if (ACHIEVER_STARTED == false) then achieverDB = achieverDB.Alliance end
     end
     if (factionGroup == "Horde") then
         if (not achieverDB.Horde) then achieverDB.Horde = {} end
-        achieverDB = achieverDB.Horde
+        if (ACHIEVER_STARTED == false) then achieverDB = achieverDB.Horde end
     end
     if (not achieverDB.categories) then
         achieverDB.categories = { version = achieverDBpc.version }
@@ -355,6 +360,7 @@ Achiever.startup = function(self)
     --self:apiRequestCharacterAchievements()
     debug('request data to UI ' .. achieverDBpc.version)
     self:apiEnableDataSend(achieverDBpc.version)
+    ACHIEVER_STARTED = true
 end
 
 
