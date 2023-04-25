@@ -4,7 +4,7 @@
 ## Notes: Achievements UI for WoW 1.12
 ## Version: 0.2
 ## X-Category: Interface Enhancements
-## SavedVariables: achieverDB
+## SavedVariables: achieverDB, achieverDBalliance, achieverDBhorde
 ## SavedVariablesPerCharacter: achieverDBpc
 
 helper\helper.lua

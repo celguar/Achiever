@@ -325,15 +325,25 @@ Achiever.startup = function(self)
     if (not achieverDBpc.debug) then achieverDBpc.debug = "disabled" end
     if (not achieverDBpc.version) then achieverDBpc.version = 0 end
 
-    if (not achieverDB) then achieverDB = {} end
     if (factionGroup == "Alliance") then
-        if (not achieverDB.Alliance) then achieverDB.Alliance = {} end
-        if (ACHIEVER_STARTED == false) then achieverDB = achieverDB.Alliance end
+        if (not achieverDB.Alliance) then
+            achieverDB.Alliance = true
+            achieverDB.Horde = false
+            achieverDB = nil
+        end
+        --if (ACHIEVER_STARTED == false) then achieverDB = achieverDB.Alliance end
     end
     if (factionGroup == "Horde") then
-        if (not achieverDB.Horde) then achieverDB.Horde = {} end
-        if (ACHIEVER_STARTED == false) then achieverDB = achieverDB.Horde end
+        if (not achieverDB.Horde) then
+            achieverDB.Horde = true
+            achieverDB.Alliance = false
+            achieverDB = nil
+        end
+        --if (ACHIEVER_STARTED == false) then achieverDB = achieverDB.Horde end
     end
+    -- always reload data for now
+    achieverDB = nil
+    if (not achieverDB) then achieverDB = {} end
     if (not achieverDB.categories) then
         achieverDB.categories = { version = achieverDBpc.version }
         achieverDB.categories.data = {}
