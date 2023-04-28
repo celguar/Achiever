@@ -29,3 +29,4 @@
 - add new categories/achievements/criterias relevant for vanilla
 - write a tool so it will help manage categories/achievements/criterias, validate 'em
 
+Planned features https://github.com/users/celguar/projects/2/views/8
