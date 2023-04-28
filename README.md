@@ -1,6 +1,6 @@
 # Achiever
 ## An Achievement addon for modded vmangos server
-[My modded vmangos branch is here: https://github.com/tsaah/core/tree/hb-achievements](https://github.com/tsaah/core/tree/hb-achievements)
+[My modded cmangos branch is here: https://github.com/celguar/mangos-classic/tree/ike3-bots](https://github.com/celguar/mangos-classic/tree/ike3-bots)
 
 [![Achiever addon](https://i.postimg.cc/Kz1WLNMy/Achiever-Summary.jpg)](https://i.postimg.cc/Kz1WLNMy/Achiever-Summary.jpg)
 
@@ -15,14 +15,13 @@
 - achievement filtering
 - achievement tracking
 - comparison
-- feats of strength
+- finish conversion of some achievements to vanilla
 - movable frame
-- game tooltip bars
+- game tooltips
 - support for more robust ordering (uiOrder with gaps should not break anything)
 
 ## TODO and not working server side:
-- vmangos patch filtering on categories and achievements
-- comparison events
+- some achievements like use LFG x times
 
 ## TODO and not working database side:
 - mask out all non relevant categories/achievements by patch
