@@ -139,6 +139,8 @@ Achiever.processServerMessage = function(self, message)
                 achieverDB.achievements.nextById[previousId] = id
             end
 
+            ACHIEVER_STARTED = true
+            
             if (n == c) then
                 --debug('loaded achievements from server')
             end
@@ -146,6 +148,7 @@ Achiever.processServerMessage = function(self, message)
         elseif (params[2] == 'ACV') then
             debug('server response: achievement data version')
             achieverDB.achievements.version = tonumber(params[3])
+            ACHIEVER_STARTED = true
         elseif (params[2] == 'CA') then
             --debug('server response: get all categories')
             local a = split(params[3], ";")
@@ -166,6 +169,7 @@ Achiever.processServerMessage = function(self, message)
             end
             -- table.insert(achieverDB.categories.byParent[parentId], id)
             achieverDB.categories.byParent[parentId][tonumber(a[4])] = id
+            ACHIEVER_STARTED = true
 
             if (n == c) then
                 debug('loaded categories from server')
@@ -173,6 +177,7 @@ Achiever.processServerMessage = function(self, message)
         elseif (params[2] == 'CAV') then
             debug('server response: criteria data version')
             achieverDB.categories.version = tonumber(params[3])
+            ACHIEVER_STARTED = true
         elseif (params[2] == 'CR') then
             --debug('server response: get all criteria')
             local a = split(params[3], ";")
@@ -204,6 +209,7 @@ Achiever.processServerMessage = function(self, message)
             end
             achieverDB.criteria.byAchievement[achievementId][tonumber(a[15])] = id
             -- table.insert(achieverDB.criteria.byAchievement[achievementId], id)
+            ACHIEVER_STARTED = true
 
             if (n == c) then
                 --debug('loaded criteria from server')
@@ -211,12 +217,14 @@ Achiever.processServerMessage = function(self, message)
         elseif (params[2] == 'CRV') then
             debug('server response: criteria data version')
             achieverDB.criteria.version = tonumber(params[3])
+            ACHIEVER_STARTED = true
         elseif (params[2] == 'CH_AC') then
             --debug('server response: char achievements')
             local a = split(params[3], ";")
             local id = tonumber(a[1])
             achieverDBpc.achievements[id] = {}
             achieverDBpc.achievements[id].date = tonumber(a[2])
+            ACHIEVER_STARTED = true
         elseif (params[2] == 'CH_CR') then
             --debug('server response: char criteria')
             local a = split(params[3], ";")
@@ -224,6 +232,7 @@ Achiever.processServerMessage = function(self, message)
             achieverDBpc.criteria[id] = {}
             achieverDBpc.criteria[id].counter = tonumber(a[2])
             achieverDBpc.criteria[id].date = tonumber(a[3])
+            ACHIEVER_STARTED = true
         elseif (params[2] == 'AE') then
             local a = split(params[3], ";")
             local id = tonumber(a[1])
@@ -238,6 +247,7 @@ Achiever.processServerMessage = function(self, message)
             -- AchievementFrameComparison_OnEvent(_G['AchievementFrameComparison'], 'ACHIEVEMENT_EARNED', id)
             debug("ACHIEVEMENT EARNED " .. achieverDB.achievements.data[id].name)
             AlertFrame_ShowAchievementEarned(id)
+            ACHIEVER_STARTED = true
         elseif (params[2] == 'ACU') then
             local a = split(params[3], ";")
             local id = tonumber(a[1])
@@ -249,6 +259,7 @@ Achiever.processServerMessage = function(self, message)
             AchievementFrameAchievements_OnEvent(_G['AchievementFrameAchievements'], 'CRITERIA_UPDATE', id)
             AchievementFrameStats_OnEvent(_G['AchievementFrameStats'], 'CRITERIA_UPDATE', id)
             debug("ACHIEVEMENT CRITERIA UPDATE ".. achieverDB.achievements.data[tonumber(a[2])].name .. '[' .. achieverDB.criteria.data[id].name .. ']')
+            ACHIEVER_STARTED = true
         else
             warn('server response: unhandled ' .. params[2])
         end
@@ -316,9 +327,9 @@ Achiever.joinChannel = function(self)
 end
 
 Achiever.startup = function(self)
-    --if (ACHIEVER_STARTED == true) then
-    --    return
-    --end
+    if (ACHIEVER_STARTED == true) then
+        return
+    end
 
     local factionGroup, localedFaction = UnitFactionGroup("player");
 
@@ -370,7 +381,7 @@ Achiever.startup = function(self)
     --self:apiRequestCharacterAchievements()
     debug('request data to UI ' .. achieverDBpc.version)
     self:apiEnableDataSend(achieverDBpc.version)
-    ACHIEVER_STARTED = true
+    -- ACHIEVER_STARTED = true
 end
 
 
