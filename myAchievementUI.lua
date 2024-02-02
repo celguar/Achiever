@@ -340,12 +340,12 @@ ACHIEVEMENTFRAME_SUBFRAMES = {
 
 function AchievementFrame_ShowSubFrame(...)
 	local subFrame, show;
+	local numFrames = select("#", ...)
 	for _, name in next, ACHIEVEMENTFRAME_SUBFRAMES  do
 		subFrame = _G[name];
 		show = false;
-		for i=1, arg.n do
-			-- if ( subFrame ==  select(i, arg)) then
-			if ( subFrame ==  arg[i]) then
+		for i=1, numFrames do
+			if ( subFrame ==  select(i, ...)) then
 				show = true
 			end
 		end
@@ -2281,7 +2281,7 @@ function AchievementFrameSummary_Update(isCompare)
 end
 
 function AchievementFrameSummary_UpdateAchievements(...)
-	local numAchievements = arg.n; -- select("#", ...);
+	local numAchievements = select("#", ...)
 	debug('AchievementFrameSummary_UpdateAchievements ' .. numAchievements)
 	local id, name, points, completed, month, day, year, description, flags, icon;
 	local buttons = AchievementFrameSummaryAchievements.buttons;
@@ -2311,7 +2311,7 @@ function AchievementFrameSummary_UpdateAchievements(...)
 		end;
 
 		if (i <= numAchievements) then
-			achievementID = arg[i];
+			achievementID = select(i, ...)
 			id, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfo(achievementID);
 
 			button.label:SetText(name);
