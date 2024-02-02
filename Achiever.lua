@@ -1,6 +1,3 @@
-
-
-
 local _G, _ = _G or getfenv()
 
 ACHIEVER_ADDON_NAME = 'Achiever'
@@ -8,6 +5,7 @@ local ACHIEVER_ADDON_VERSION = '0.0.2.0'
 local ACHIEVER_ADDON_CHANNEL = 'ACHIEVER_CHANNEL'
 local ACHIEVER_REQUESTED_DATA = false
 local ACHIEVER_STARTED = false
+local ACHIEVER_INIT = false
 
 local function debug(msg)
     if achieverDBpc.debug == "enabled" then
@@ -60,41 +58,18 @@ Achiever:RegisterEvent("ADDON_LOADED")
 Achiever:RegisterEvent("CHAT_MSG_CHANNEL_NOTICE")
 Achiever:RegisterEvent("PLAYER_ENTERING_WORLD")
 Achiever:RegisterEvent("VARIABLES_LOADED")
-
+Achiever:RegisterEvent("CHAT_MSG_ADDON")
+Achiever:RegisterEvent("CHAT_MSG_WHISPER")
 
 Achiever.version = ACHIEVER_ADDON_VERSION
 Achiever.channel = ACHIEVER_ADDON_CHANNEL
 Achiever.channelIndex = nil
 
-Achiever.hookChatFrame = function(self, frame)
-    if (not frame) then
-        warn('Achiever failed to hook chat frame')
-        return
-    end
-
-    local original = frame.AddMessage
-    if (original) then
-        frame.AddMessage = function(t, message, ...)
-            local s, e  = string.find(message, 'ACHI|', 1, true)
-            if (s == 1 and e == 5) then
-                -- if (ACHIEVER_ADDON_DEBUG) then
-                --     debug('hidden achievement server message: ' .. (message or 'nil'))
-                -- end
-                self:processServerMessage(message)
-                return false --hide this message
-            end
-            original(t, message, unpack(arg))
-        end
-    else
-        warn('failed to hook non-chat frame.')
-    end
-end
-
 Achiever.achievementFrameSummaryCategorySubscribers = {}
 
 Achiever.processServerMessage = function(self, message)
 
-    local params = split(message, '|')
+    local params = split(message, '#')
     if (params[1] == 'ACHI') then
         if (params[2] == 'AC') then
             --debug('server response: new achievement entry ')
@@ -150,7 +125,6 @@ Achiever.processServerMessage = function(self, message)
             achieverDB.achievements.version = tonumber(params[3])
             ACHIEVER_STARTED = true
         elseif (params[2] == 'CA') then
-            --debug('server response: get all categories')
             local a = split(params[3], ";")
             local id = tonumber(a[1])
             achieverDB.categories.data[id] = {}
@@ -275,7 +249,7 @@ end
 Achiever.apiRequestCategoryInfo = function(self, version)
 
     --debug('requested information about categories from server, ' .. version)
-    SendChatMessage('.achievements getCategoties ' .. version)
+    SendChatMessage('.achievements getCategories ' .. version)
     --SendChatMessage('!achievements getCategoties ' .. version, 'CHANNEL', nil, Achiever.channelIndex)
 end
 Achiever.apiRequestAchievementInfo = function(self, version)
@@ -380,41 +354,32 @@ Achiever.startup = function(self)
     --self:apiRequestCharacterCriteria()
     --self:apiRequestCharacterAchievements()
     debug('request data to UI ' .. achieverDBpc.version)
+	ACHIEVER_INIT = true
     self:apiEnableDataSend(achieverDBpc.version)
     -- ACHIEVER_STARTED = true
 end
 
-
-
-Achiever:SetScript("OnEvent", function()
+Achiever:SetScript("OnEvent", function(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)
     if (not event) then
         warn('OnEvent with no event')
 		return
 	elseif (event == "ADDON_LOADED" and arg1 == ACHIEVER_ADDON_NAME) then
         debug('ADDON_LOADED')
-        Achiever:hookChatFrame(ChatFrame1)
-        Achiever:startup()
-        --Achiever:joinChannel()
-        -- AchievementFrameCategories_OnEvent(AchievementFrameCategories, "ADDON_LOADED", ACHIEVER_ADDON_NAME)
-        -- AchievementFrameAchievements_OnEvent(AchievementFrameCategories, "ADDON_LOADED", ACHIEVER_ADDON_NAME)
 	elseif (event == 'CHAT_MSG_CHANNEL_LEAVE') then
         debug('OnEvent CHAT_MSG_CHANNEL_LEAVE')
-	elseif (event == 'CHAT_MSG_ADDON') then
-        debug('OnEvent CHAT_MSG_ADDON')
     elseif (event == 'VARIABLES_LOADED') then
         debug('VARIABLES_LOADED')
-        --Achiever:joinChannel()
-	--elseif (event == 'CHAT_MSG_CHANNEL_NOTICE') then
-	--	if (arg9 == Achiever.channel and arg1 == 'YOU_JOINED') then
-	--		Achiever.channelIndex = arg8
-	--		debug('just joined chan index ' .. Achiever.channelIndex)
-    --        debug('just joined chan name ' .. arg9)
-    --        --Achiever:startup()
-	--	end
 	elseif (event == 'PLAYER_ENTERING_WORLD') then
-        --Achiever:joinChannel()
-        Achiever:hookChatFrame(ChatFrame1)
+		debug('PLAYER_ENTERING_WORLD')
         Achiever:startup()
+	elseif (event == 'CHAT_MSG_ADDON' or event == 'CHAT_MSG_WHISPER') then
+		if (ACHIEVER_INIT and arg1) then
+			local s, e  = string.find(arg1, 'ACHI#', 1, true)
+			if (s == 1 and e == 5) then
+				debug('hidden achievement server message: ' .. arg1)
+				self:processServerMessage(arg1)
+			end
+		end
 	end
 end)
 
