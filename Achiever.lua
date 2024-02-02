@@ -1,6 +1,3 @@
-
-
-
 local _G, _ = _G or getfenv()
 
 ACHIEVER_ADDON_NAME = 'Achiever'
@@ -75,11 +72,8 @@ Achiever.hookChatFrame = function(self, frame)
     local original = frame.AddMessage
     if (original) then
         frame.AddMessage = function(t, message, ...)
-            local s, e  = string.find(message, 'ACHI|', 1, true)
+            local s, e  = string.find(message, 'ACHI#', 1, true)
             if (s == 1 and e == 5) then
-                -- if (ACHIEVER_ADDON_DEBUG) then
-                --     debug('hidden achievement server message: ' .. (message or 'nil'))
-                -- end
                 self:processServerMessage(message)
                 return false --hide this message
             end
@@ -94,7 +88,7 @@ Achiever.achievementFrameSummaryCategorySubscribers = {}
 
 Achiever.processServerMessage = function(self, message)
 
-    local params = split(message, '|')
+    local params = split(message, '#')
     if (params[1] == 'ACHI') then
         if (params[2] == 'AC') then
             --debug('server response: new achievement entry ')
@@ -275,7 +269,7 @@ end
 Achiever.apiRequestCategoryInfo = function(self, version)
 
     --debug('requested information about categories from server, ' .. version)
-    SendChatMessage('.achievements getCategoties ' .. version)
+    SendChatMessage('.achievements getCategories ' .. version)
     --SendChatMessage('!achievements getCategoties ' .. version, 'CHANNEL', nil, Achiever.channelIndex)
 end
 Achiever.apiRequestAchievementInfo = function(self, version)
@@ -394,25 +388,13 @@ Achiever:SetScript("OnEvent", function()
         debug('ADDON_LOADED')
         Achiever:hookChatFrame(ChatFrame1)
         Achiever:startup()
-        --Achiever:joinChannel()
-        -- AchievementFrameCategories_OnEvent(AchievementFrameCategories, "ADDON_LOADED", ACHIEVER_ADDON_NAME)
-        -- AchievementFrameAchievements_OnEvent(AchievementFrameCategories, "ADDON_LOADED", ACHIEVER_ADDON_NAME)
 	elseif (event == 'CHAT_MSG_CHANNEL_LEAVE') then
         debug('OnEvent CHAT_MSG_CHANNEL_LEAVE')
 	elseif (event == 'CHAT_MSG_ADDON') then
         debug('OnEvent CHAT_MSG_ADDON')
     elseif (event == 'VARIABLES_LOADED') then
         debug('VARIABLES_LOADED')
-        --Achiever:joinChannel()
-	--elseif (event == 'CHAT_MSG_CHANNEL_NOTICE') then
-	--	if (arg9 == Achiever.channel and arg1 == 'YOU_JOINED') then
-	--		Achiever.channelIndex = arg8
-	--		debug('just joined chan index ' .. Achiever.channelIndex)
-    --        debug('just joined chan name ' .. arg9)
-    --        --Achiever:startup()
-	--	end
 	elseif (event == 'PLAYER_ENTERING_WORLD') then
-        --Achiever:joinChannel()
         Achiever:hookChatFrame(ChatFrame1)
         Achiever:startup()
 	end
