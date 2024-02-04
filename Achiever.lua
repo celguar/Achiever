@@ -53,7 +53,6 @@ local function split(str, sep)
     return res
 end
 
-
 Achiever:RegisterEvent("ADDON_LOADED")
 Achiever:RegisterEvent("CHAT_MSG_CHANNEL_NOTICE")
 Achiever:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -308,6 +307,8 @@ Achiever.startup = function(self)
     local factionGroup, localedFaction = UnitFactionGroup("player");
 
     if (not achieverDBpc.debug) then achieverDBpc.debug = "disabled" end
+    if (not achieverDBpc.buttonsmall) then achieverDBpc.buttonsmall = "disabled"; Achiever_Minimap:Hide(); end
+    if (not achieverDBpc.buttonmain) then achieverDBpc.buttonmain = "enabled" end
     if (not achieverDBpc.version) then achieverDBpc.version = 0 end
 
     if (factionGroup == "Alliance") then
@@ -383,3 +384,103 @@ Achiever:SetScript("OnEvent", function(self, event, arg1, arg2, arg3, arg4, arg5
 	end
 end)
 
+NEWBIE_TOOLTIP_ACHIEVEMENT = "View information about your achievements and statistics.";
+TOGGLEACHIEVEMENTS = 'Open Achievements';
+BINDING_HEADER_ACHIEVER = "Achiever";
+BINDING_NAME_TOGGLEACHIEVEMENTS = "Show Achievements";
+
+function AchievementsMicroButton_OnLoad()
+    this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+    this:RegisterEvent("PLAYER_LEVEL_UP");
+    this:RegisterEvent("UPDATE_BINDINGS");
+    this:RegisterEvent("UNIT_LEVEL");
+    this:RegisterEvent("PLAYER_ENTERING_WORLD");
+    this:SetNormalTexture("Interface\\AddOns\\Achiever\\textures\\UI-MicroButton-Achievement-Up");
+    this:SetPushedTexture("Interface\\AddOns\\Achiever\\textures\\UI-MicroButton-Achievement-Down");
+    this:SetDisabledTexture("Interface\\AddOns\\Achiever\\textures\\UI-MicroButton-Achievement-Disabled");
+    this:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight");
+    this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+    if ( GetBindingKey("TOGGLEACHIEVEMENTS") ) then
+        this.tooltipText = "Achievements".." "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEACHIEVEMENTS")..")"..FONT_COLOR_CODE_CLOSE;
+    else
+        this.tooltipText = "Achievements";
+    end
+    this.newbieText = NEWBIE_TOOLTIP_ACHIEVEMENT;
+end
+
+function AchievementsMicroButton_OnEvent()
+    if ( event == "PLAYER_LEVEL_UP" ) then
+        UpdateAchievementsButton();
+    elseif ( event == "UNIT_LEVEL" or event == "PLAYER_ENTERING_WORLD" ) then
+        UpdateAchievementsButton();
+    elseif ( event == "UPDATE_BINDINGS" ) then
+        if ( GetBindingKey("TOGGLEACHIEVEMENTS") ) then
+            this.tooltipText = "Achievements".." "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEACHIEVEMENTS")..")"..FONT_COLOR_CODE_CLOSE;
+        else
+            this.tooltipText = "Achievements";
+        end
+    end
+end
+
+function UpdateAchievementsButton()
+    -- move nearby buttons
+    if ( UnitLevel("player") < 10 ) then
+        AchievementsMicroButton:SetPoint("BOTTOMLEFT", "TalentMicroButton", "BOTTOMLEFT", 0, 0);
+        QuestLogMicroButton:SetPoint("BOTTOMLEFT", "AchievementsMicroButton", "BOTTOMRIGHT", -2, 0);
+    else
+        AchievementsMicroButton:SetPoint("BOTTOMLEFT", "TalentMicroButton", "BOTTOMRIGHT", -2, 0);
+        --QuestLogMicroButton:SetPoint("BOTTOMLEFT", "AchievementsMicroButton", "BOTTOMRIGHT", -2, 0);
+    end
+    -- hide help button to free up space
+    HelpMicroButton:Hide();
+    QuestLogMicroButton:SetPoint("BOTTOMLEFT", "AchievementsMicroButton", "BOTTOMRIGHT", -3, 0);
+
+    -- Update main bar button
+    if ( AchievementFrame:IsShown() ) then
+        AchievementsMicroButton:SetButtonState("PUSHED", 1);
+        SetButtonPulse(AchievementsMicroButton, 0, 1);
+    else
+        AchievementsMicroButton:SetButtonState("NORMAL");
+    end
+end
+
+local function toggleMainButton()
+    if achieverDBpc.buttonmain == "enabled" then
+        achieverDBpc.buttonmain = "disabled"
+        AchievementsMicroButton:Hide();
+        HelpMicroButton:Show();
+        if ( UnitLevel("player") < 10 ) then
+            QuestLogMicroButton:SetPoint("BOTTOMLEFT", "TalentMicroButton", "BOTTOMLEFT", 0, 0);
+        else
+            QuestLogMicroButton:SetPoint("BOTTOMLEFT", "TalentMicroButton", "BOTTOMRIGHT", -2, 0);
+        end
+        DEFAULT_CHAT_FRAME:AddMessage('Achiever main bar button disabled')
+    else
+        achieverDBpc.buttonmain = "enabled"
+        AchievementsMicroButton:Show();
+        UpdateAchievementsButton();
+        DEFAULT_CHAT_FRAME:AddMessage('Achiever main bar button enabled')
+    end
+end
+
+local function toggleSmallButton()
+    if achieverDBpc.buttonsmall == "enabled" then
+        achieverDBpc.buttonsmall = "disabled"
+        Achiever_Minimap:Hide();
+        DEFAULT_CHAT_FRAME:AddMessage('Achiever movable button disabled')
+    else
+        achieverDBpc.buttonsmall = "enabled"
+        Achiever_Minimap:Show();
+        DEFAULT_CHAT_FRAME:AddMessage('Achiever movable button enabled')
+    end
+end
+
+SLASH_ACHIEVERBUTTONMAIN1 = "/acbuttonmain"
+SlashCmdList.ACHIEVERBUTTONMAIN = function()
+    toggleMainButton()
+end
+
+SLASH_ACHIEVERBUTTONSMALL1 = "/acbuttonsmall"
+SlashCmdList.ACHIEVERBUTTONSMALL = function()
+    toggleSmallButton()
+end

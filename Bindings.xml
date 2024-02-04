@@ -1,0 +1,5 @@
+<Bindings>
+  <Binding runOnUp="false" name="TOGGLEACHIEVEMENTS" header="ACHIEVER" default="Y">
+    AchievementFrame_ToggleAchievementFrame()
+  </Binding>
+</Bindings>

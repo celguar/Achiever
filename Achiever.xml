@@ -63,4 +63,25 @@
             </OnMouseUp>
         </Scripts>
     </Button>
+    <!-- Adds the button seen in later versions that opened the Achievement window -->
+    <Button name="AchievementsMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+        <Anchors>
+            <Anchor point="BOTTOMLEFT" relativeTo="TalentMicroButton" relativePoint="BOTTOMRIGHT">
+                <Offset>
+                    <AbsDimension x="-3" y="0" />
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Scripts>
+            <OnLoad>
+                 AchievementsMicroButton_OnLoad();
+             </OnLoad>
+             <OnClick>
+                 AchievementFrame_ToggleAchievementFrame();
+             </OnClick>
+             <OnEvent>
+                 AchievementsMicroButton_OnEvent();
+             </OnEvent>
+        </Scripts>
+    </Button>
 </Ui>
