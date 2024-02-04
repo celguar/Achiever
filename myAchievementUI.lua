@@ -212,7 +212,6 @@ function AchievementFrame_ToggleAchievementFrame(toggleStatFrame)
 		AchievementFrameTab_OnClick(2);
 	end
 
-
 end
 
 function AchievementFrame_DisplayComparison (unit)
@@ -241,12 +240,14 @@ function AchievementFrame_OnShow (self)
 	end
 	-- UpdateMicroButtons();
 	AchievementFrame_LoadTextures();
+	UpdateAchievementsButton();
 end
 
 function AchievementFrame_OnHide (self)
 	PlaySoundFile([[Interface\AddOns\Achiever\sounds\AchievementMenuClose.wav]], 'SFX');
 	-- UpdateMicroButtons();
 	AchievementFrame_ClearTextures();
+	UpdateAchievementsButton();
 end
 
 function AchievementFrame_ForceUpdate ()

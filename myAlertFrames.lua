@@ -138,6 +138,10 @@ function AchievementAlertFrame_ShowAlert (achievementID)
 	AlertFrame_AnimateIn(frame);
 
 	AlertFrame_FixAnchors();
+
+	if ( not AchievementFrame:IsShown() ) then
+		SetButtonPulse(AchievementsMicroButton, 60, 1)
+	end
 end
 
 function AchievementAlertFrame_GetAlertFrame()
