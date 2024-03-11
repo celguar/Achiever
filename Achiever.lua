@@ -459,6 +459,10 @@ function UpdateAchievementsButton()
     else
         AchievementsMicroButton:SetButtonState("NORMAL");
     end
+
+    if achieverDBpc.buttonsmall == "disabled" then
+        Achiever_Minimap:Hide();
+    end
 end
 
 local function toggleMainButton()
